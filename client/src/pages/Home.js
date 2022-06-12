@@ -1,27 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getAllMatchups } from '../utils/api';
+import { useQuery } from '@apollo/client';
+import { ALL_MATCHUPS } from '../utils/queries';
 
 const Home = () => {
-  const [matchupList, setMatchupList] = useState([]);
-
-  useEffect(() => {
-    const getMatchupList = async () => {
-      try {
-        const res = await getAllMatchups();
-        if (!res.ok) {
-          throw new Error('No list of matchups');
-        }
-        const matchupList = await res.json();
-        setMatchupList(matchupList);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    getMatchupList();
-  }, []);
-
+  const {loading, data} = useQuery(ALL_MATCHUPS)
+  const matchupList = data?.allMatchups||[]
   return (
+    <>
+    {loading? (
+      <h1>Loading...</h1>
+    ):(
     <div className="card bg-white card-rounded w-50">
       <div className="card-header bg-dark text-center">
         <h1>Welcome to Tech Matchup!</h1>
@@ -46,7 +35,10 @@ const Home = () => {
           <button className="btn btn-lg btn-danger">Create Matchup!</button>
         </Link>
       </div>
-    </div>
+    
+  </div>
+  )}
+  </>
   );
 };
 

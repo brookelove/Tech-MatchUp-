@@ -1,38 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { getMatchup, createVote } from '../utils/api';
-
+import { useQuery } from '@apollo/client';
+import { SINGLE_MATCHUP } from '../utils/queries';
+import { CREATE_VOTE } from '../utils/mutations';
 const Vote = () => {
-  const [matchup, setMatchup] = useState({});
   let { id } = useParams();
+  const [voteNum,setVoteNum] = useState(0);
+  const {loading, data} = useQuery(SINGLE_MATCHUP, {
+    variables: {
+      matchId:id
+    }
+  })
 
-  useEffect(() => {
-    const getMatchupInfo = async () => {
-      try {
-        const res = await getMatchup(id);
-        if (!res.ok) {
-          throw new Error('No matchup');
-        }
-        const matchup = await res.json();
-        setMatchup(matchup);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    getMatchupInfo();
-  }, [id]);
+  const [createVote,{error}]=useMutation(CREATE_VOTE);
 
+  const matchup = data?.oneMatchup||{}
+
+  
   const handleVote = async (techNum) => {
     try {
-      const res = await createVote({ id, techNum });
-
-      if (!res.ok) {
-        throw new Error('Could not vote');
-      }
-
-      const matchup = await res.json();
-      console.log(matchup);
-      setMatchup(matchup);
+      const res = await createVote({variables:{ matchId:id, techNum }});
     } catch (err) {
       console.error(err);
     }
@@ -40,6 +27,10 @@ const Vote = () => {
 
   return (
     <div className="card bg-white card-rounded w-50">
+      {loading?(
+        <h1>Loading...</h1>
+      ):(
+        <>
       <div className="card-header bg-dark text-center">
         <h1>Here is the matchup!</h1>
       </div>
@@ -63,6 +54,8 @@ const Vote = () => {
           </Link>
         </div>
       </div>
+      </>
+      )}
     </div>
   );
 };

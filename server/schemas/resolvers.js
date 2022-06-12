@@ -11,12 +11,24 @@ const resolvers = {
     },
     allMatchups: async ()=>{
       return await Matchup.find()
+    },
+    oneMatchup: async (parent, args) => {
+      return await Matchup.findById(args.matchId)
     }
-    // oneMatchUp: async (parent, args) => {
-    //   return await Matchup.findById(args.matchId)
-    // }
   },
-
+  Mutation: {
+    createMatchup: async(parent, args) => {
+      return Matchup.create(args)
+    },
+    createVote: async(parent, args) => {
+      return await Matchup.findOneAndUpdate(
+        { _id: args.matchId },
+        { $inc: { [`tech${args.techNum}_votes`]: 1 } },
+        { new: true }
+      );
+    }
+    
+  }
 
 };
 

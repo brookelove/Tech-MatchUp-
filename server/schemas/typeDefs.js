@@ -16,8 +16,12 @@ const typeDefs = gql`
   type Query {
     allTech:[Tech]
     allMatchups:[Matchup]
-    # oneMatchup:(matchID:ID!):Matchup
+    oneMatchup(matchId:ID!):Matchup
     test: String
+  }
+  type Mutation {
+    createMatchup (tech1:String!, tech2: String!):Matchup
+    createVote (matchId:ID!, techNum:Int!):Matchup
   }
 `;
 
