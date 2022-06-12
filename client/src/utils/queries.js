@@ -23,3 +23,11 @@ query oneMatchup($matchupId:ID!) {
     }
 }
 `
+
+export const ALL_TECH = gql`
+query AllTech {
+  allTech {
+    _id
+    name
+  }
+}`
