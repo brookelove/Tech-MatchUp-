@@ -1,30 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getAllTech, createMatchup } from '../utils/api';
+import {useQuery,useMutation} from "@apollo/client";
+import { ALL_TECH } from '../utils/queries';
+import { CREATE_MATCHUP } from '../utils/mutations';
 
 const Matchup = () => {
-  const [techList, setTechList] = useState([]);
   const [formData, setFormData] = useState({
     tech1: 'JavaScript',
     tech2: 'JavaScript',
   });
   let navigate = useNavigate();
 
-  useEffect(() => {
-    const getTechList = async () => {
-      try {
-        const res = await getAllTech();
-        if (!res.ok) {
-          throw new Error('No list of technologies');
-        }
-        const techList = await res.json();
-        setTechList(techList);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    getTechList();
-  }, []);
+  const {loading,data} = useQuery(ALL_TECH)
+  const techList = data?.allTech||[]
+
+  const [createMatchup,{error}] = useMutation(CREATE_MATCHUP)
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -35,15 +26,9 @@ const Matchup = () => {
     event.preventDefault();
 
     try {
-      const res = await createMatchup(formData);
-
-      if (!res.ok) {
-        throw new Error('something went wrong!');
-      }
-
-      const matchup = await res.json();
-      console.log(matchup);
-      navigate(`/matchup/${matchup._id}`);
+      const {data} = await createMatchup({variables:formData});
+     
+      navigate(`/matchup/${data.createMatchup._id}`);
     } catch (err) {
       console.error(err);
     }

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 import { SINGLE_MATCHUP } from '../utils/queries';
 import { CREATE_VOTE } from '../utils/mutations';
 const Vote = () => {
